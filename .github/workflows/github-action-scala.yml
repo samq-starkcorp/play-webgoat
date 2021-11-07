@@ -1,4 +1,4 @@
-name: Scala CI
+name: WhiteSource Prioritize Java with SBT
 
 on:
   push:
@@ -18,5 +18,36 @@ jobs:
       with:
         java-version: '8'
         distribution: 'adopt'
-    - name: SBT Build
+    - name: SBT Package
       run: sbt package
+
+    - name: WhiteSource Unified Agent Scan
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        WS_APIKEY: ${{secrets.APIKEY}}
+        WS_USERKEY: ${{secrets.USERKEY}}
+        WS_WSS_URL: https://saas.whitesourcesoftware.com/agent
+        WS_PRODUCTNAME: GH_${{github.event.repository.name}}
+        WS_PROJECTNAME: ${{github.ref}}_Prioritize
+        WS_ENABLEIMPACTANALYSIS: true
+        WS_REQUIREKNOWNSHA1: false
+        WS_RESOLVEALLDEPENDENCIES: false
+        WS_SBT_RESOLVEDEPENDENCIES: true
+        WS_SBT_RUNPRESTEP: true
+        WS_FILESYSTEMSCAN: false
+        WS_GENERATEPROJECTDETAILSJSON: true
+      run: |
+        curl -LJO https://unified-agent.s3.amazonaws.com/wss-unified-agent.jar
+        echo Unified Agent downloaded successfully
+        JARFILE=$(find ./ -type f -wholename "*/target/*.jar")
+        echo $WARFILE will be added to appPath
+        java -jar wss-unified-agent.jar -appPath $JARFILE -d ./ -viaDebug true
+
+    - name: 'Upload Prioritize Logs'
+      uses: actions/upload-artifact@v2
+      with:
+        name: Prioritize-Logs
+        path: |
+          /tmp/whitesource*
+          /tmp/ws-ua*
+        retention-days: 1
