@@ -37,6 +37,7 @@ jobs:
         WS_SBT_RUNPRESTEP: true
         WS_FILESYSTEMSCAN: false
         WS_GENERATEPROJECTDETAILSJSON: true
+        WS_LOG_LEVEL: debug
       run: |
         curl -LJO https://unified-agent.s3.amazonaws.com/wss-unified-agent.jar
         echo Unified Agent downloaded successfully
@@ -49,6 +50,7 @@ jobs:
       with:
         name: Prioritize-Logs
         path: |
+          ${{github.workspace}}/whitesource
           /tmp/whitesource*
           /tmp/ws-ua*
         retention-days: 1
