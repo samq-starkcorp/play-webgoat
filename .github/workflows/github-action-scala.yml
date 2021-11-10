@@ -23,6 +23,7 @@ jobs:
         sbt package
         sbt makePom
         mv $(find ./ -type f -wholename "*/target/*.pom") ./pom.xml
+        mvn clean install -DskipTests=true
 
     - name: WhiteSource Unified Agent Scan
       continue-on-error: true
