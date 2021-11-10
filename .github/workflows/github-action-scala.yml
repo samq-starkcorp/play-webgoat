@@ -13,13 +13,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up JDK 11
+    - name: Set up JDK 
       uses: actions/setup-java@v2
       with:
         java-version: '8'
         distribution: 'adopt'
     - name: SBT Package
-      run: sbt package
+      run: |
+        sbt package
+        sbt makePOM
+        mv $(find ./ -type f -wholename "*/target/*.pom") ./pom.xml
 
     - name: WhiteSource Unified Agent Scan
       continue-on-error: true
@@ -33,17 +36,16 @@ jobs:
         WS_ENABLEIMPACTANALYSIS: true
         WS_REQUIREKNOWNSHA1: false
         WS_RESOLVEALLDEPENDENCIES: false
-        WS_SBT_RESOLVEDEPENDENCIES: true
-        WS_SBT_RUNPRESTEP: true
+        WS_MAVEN_RESOLVEDEPENDENCIES: true
+        WS_MAVEN_AGGREGATEMODULES: true
         WS_FILESYSTEMSCAN: false
         WS_GENERATEPROJECTDETAILSJSON: true
-        WS_LOG_LEVEL: debug
       run: |
         curl -LJO https://unified-agent.s3.amazonaws.com/wss-unified-agent.jar
         echo Unified Agent downloaded successfully
         JARFILE=$(find ./ -type f -wholename "*/target/*.jar")
-        echo $WARFILE will be added to appPath
-        java -jar wss-unified-agent.jar -appPath $JARFILE -d ./ -viaDebug true
+        echo $JARFILE will be added to appPath
+        java -jar wss-unified-agent.jar -appPath $JARFILE -d ./
 
     - name: 'Upload Prioritize Logs'
       uses: actions/upload-artifact@v2
