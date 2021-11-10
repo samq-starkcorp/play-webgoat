@@ -21,7 +21,7 @@ jobs:
     - name: SBT Package
       run: |
         sbt package
-        sbt makePOM
+        sbt makePom
         mv $(find ./ -type f -wholename "*/target/*.pom") ./pom.xml
 
     - name: WhiteSource Unified Agent Scan
