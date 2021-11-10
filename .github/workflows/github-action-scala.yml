@@ -1,4 +1,4 @@
-name: WhiteSource Prioritize Java with SBT
+name: WhiteSource Java with SBT
 
 on:
   push:
@@ -30,8 +30,8 @@ jobs:
         WS_USERKEY: ${{secrets.USERKEY}}
         WS_WSS_URL: https://saas.whitesourcesoftware.com/agent
         WS_PRODUCTNAME: GH_${{github.event.repository.name}}
-        WS_PROJECTNAME: ${{github.ref}}_noprestep
-        WS_REQUIREKNOWNSHA1: false
+        WS_PROJECTNAME: ${{github.ref}}_prestep
+        WS_SBT_RUNPRESTEP: true
         WS_FILESYSTEMSCAN: false
         WS_GENERATEPROJECTDETAILSJSON: true
       run: |
